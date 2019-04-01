@@ -4,6 +4,7 @@
       "port": "APP_PORT"
   },
   "base-api": {
+    "protocol": "BASE_API_PROTOCOL",
     "host": "BASE_API_HOST",
     "port": "BASE_API_PORT"
   },

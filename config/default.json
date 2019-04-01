@@ -5,7 +5,7 @@
       "port": 25616
   },
   "schedule": {
-    "temperatureParserTime": 2,
-    "criticalNotifierTime": 1
+    "temperatureParserTime": 5,
+    "criticalNotifierTime": 7
   }
 }

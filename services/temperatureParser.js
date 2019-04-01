@@ -4,11 +4,11 @@ const SensorProvider = require('../providers/SensorProvider');
 const LastTempProvider = require('../providers/LastTempProvider');
 const CriticalProvider = require('../providers/CriticalProvider');
 
-const { host, port } = config['base-api'];
+const { host, port, protocol } = config['base-api'];
 
 async function getSectors() {
   const options = {
-    uri: `http://${host}:${port}/api/sectors`,
+    uri: `${protocol}://${host}:${port}/api/sectors`,
     json: true,
   };
 
@@ -38,7 +38,7 @@ async function getCurrentSectorsTemp() {
     const currentTemperature = (generateRandom(minTemperature, maxTemperature)).toFixed(2);
     return {
       ...sectorInfo,
-      currentTemperature: 600,
+      currentTemperature,
       date: new Date(),
     };
   }));
