@@ -1,0 +1,14 @@
+{
+  "app": {
+      "host": "APP_HOST",
+      "port": "APP_PORT"
+  },
+  "base-api": {
+    "host": "BASE_API_HOST",
+    "port": "BASE_API_PORT"
+  },
+  "mongo-db": {
+      "user": "MONGO_DB_USER",
+      "password": "MONGO_DB_PASSWORD"
+  }
+}
