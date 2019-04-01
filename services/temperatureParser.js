@@ -38,7 +38,7 @@ async function getCurrentSectorsTemp() {
     const currentTemperature = (generateRandom(minTemperature, maxTemperature)).toFixed(2);
     return {
       ...sectorInfo,
-      currentTemperature,
+      currentTemperature: 600,
       date: new Date(),
     };
   }));
