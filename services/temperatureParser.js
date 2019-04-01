@@ -2,6 +2,7 @@ const request = require('request-promise');
 const config = require('config');
 const SensorProvider = require('../providers/SensorProvider');
 const LastTempProvider = require('../providers/LastTempProvider');
+const CriticalProvider = require('../providers/CriticalProvider');
 
 const { host, port } = config['base-api'];
 
@@ -13,10 +14,16 @@ async function getSectors() {
 
   const sectors = await request(options);
 
-  return sectors.map(({ uuid, maxTemperature, minTemperature }) => ({
+  return sectors.map(({
     uuid,
-    max: maxTemperature,
-    min: minTemperature,
+    maxTemperature,
+    minTemperature,
+    maxTimeExcess,
+  }) => ({
+    uuid,
+    maxTimeExcess,
+    maxTemperature,
+    minTemperature,
   }));
 }
 
@@ -26,10 +33,11 @@ function generateRandom(min, max) {
 
 async function getCurrentSectorsTemp() {
   const sectors = await getSectors();
-  return Promise.all(sectors.map(({ uuid, min, max }) => {
-    const currentTemperature = (generateRandom(min, max)).toFixed(2);
+  return Promise.all(sectors.map((sectorInfo) => {
+    const { maxTemperature, minTemperature } = sectorInfo;
+    const currentTemperature = (generateRandom(minTemperature, maxTemperature)).toFixed(2);
     return {
-      uuid,
+      ...sectorInfo,
       currentTemperature,
       date: new Date(),
     };
@@ -44,8 +52,29 @@ async function parseTemperature() {
   // truncate last temperatures
   await LastTempProvider.deleteAll();
 
-  const sectors = await getCurrentSectorsTemp();
-  await Promise.all(sectors.map(sector => LastTempProvider.create(sector)));
+  // get new temperatures
+  const sectorTemps = await getCurrentSectorsTemp();
+
+  await Promise.all(sectorTemps.map(async (sectorTemp) => {
+    const {
+      uuid,
+      maxTimeExcess,
+      maxTemperature,
+      currentTemperature,
+    } = sectorTemp;
+
+    // add new temperatures to current table
+    await LastTempProvider.create(sectorTemp);
+
+    // control critical situation
+    if (currentTemperature > maxTemperature && !await CriticalProvider.checkIfExists(uuid)) {
+      await CriticalProvider.create({ uuid, maxTimeExcess });
+    } else if (currentTemperature > maxTemperature) {
+      await CriticalProvider.updateTime(uuid);
+    } else if (currentTemperature < maxTemperature && await CriticalProvider.checkIfExists(uuid)) {
+      await CriticalProvider.removeCriticalSituation(uuid);
+    }
+  }));
 }
 
 module.exports = {

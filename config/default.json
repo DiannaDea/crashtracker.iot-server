@@ -3,5 +3,8 @@
       "name": "heroku_wbn1nfjm",
       "host": "ds125616.mlab.com",
       "port": 25616
+  },
+  "schedule": {
+    "temperatureParser": 5
   }
 }
