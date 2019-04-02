@@ -6,22 +6,20 @@ const logger = require('../utils/logger');
 
 const { host, port, protocol } = config['base-api'];
 
-async function sendCritcalToServer(sectorId, maxTimeExcess, timeExcess) {
+async function sendCritcalToServer(sectorId, timeExcess) {
   const options = {
-    uri: `${protocol}://${host}:${port}/api/devices/critical`,
+    uri: `${protocol}://${host}:${port}/api/sectors/${sectorId}/critical`,
     method: 'POST',
     json: true,
     body: {
-      sectorId,
-      maxTimeExcess,
       timeExcess,
     },
   };
   try {
     await request(options);
-    logger.info('===== send critical notification');
+    logger.info(`Send critical notification to base server, sectorId: ${sectorId}`);
   } catch (error) {
-    logger.error('===== ERROR sending critical notification', error);
+    logger.error(`Error sending critical notification to base server, sectorId: ${sectorId}`, error);
   }
 }
 
@@ -29,9 +27,9 @@ async function motitorCriticalTime() {
   const criticalSituations = await CriticalProvider.getAll();
 
   await Promise.all(criticalSituations.map(async (situation) => {
-    const { uuid, timeExcess, maxTimeExcess } = situation;
+    const { uuid, timeExcess } = situation;
     if (situation.timeExcess >= situation.maxTimeExcess) {
-      await sendCritcalToServer(uuid, maxTimeExcess, timeExcess);
+      await sendCritcalToServer(uuid, timeExcess);
     }
     return situation;
   }));
