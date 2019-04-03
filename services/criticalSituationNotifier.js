@@ -24,6 +24,7 @@ async function sendCritcalToServer(sectorId, timeExcess) {
 }
 
 async function motitorCriticalTime() {
+  // FIXME: combine if(32) + CriticalProvider.getAll()
   const criticalSituations = await CriticalProvider.getAll();
 
   await Promise.all(criticalSituations.map(async (situation) => {

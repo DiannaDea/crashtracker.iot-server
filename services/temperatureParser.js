@@ -3,8 +3,10 @@ const config = require('config');
 const SensorProvider = require('../providers/SensorProvider');
 const LastTempProvider = require('../providers/LastTempProvider');
 const CriticalProvider = require('../providers/CriticalProvider');
+const WorkStatusProvider = require('../providers/WorkStatusProvider');
 
 const { host, port, protocol } = config['base-api'];
+const { temperatureParserTime } = config.schedule;
 
 async function getSectors() {
   const options = {
@@ -61,6 +63,7 @@ async function parseTemperature() {
       maxTimeExcess,
       maxTemperature,
       currentTemperature,
+      notificationHours,
     } = sectorTemp;
 
     // add new temperatures to current table
@@ -73,6 +76,25 @@ async function parseTemperature() {
       await CriticalProvider.updateTime(uuid);
     } else if (currentTemperature < maxTemperature && await CriticalProvider.checkIfExists(uuid)) {
       await CriticalProvider.removeCriticalSituation(uuid);
+    }
+
+    const workStatus = await WorkStatusProvider.checkIfExists(uuid);
+
+    if (!workStatus) {
+      await WorkStatusProvider.create({
+        uuid,
+        notificationHours,
+        minutes: workStatus.minutes + temperatureParserTime,
+      });
+    } else if (workStatus.minutes + temperatureParserTime < 60) {
+      await WorkStatusProvider.update(uuid, {
+        minutes: workStatus.minutes + temperatureParserTime,
+      });
+    } else if (workStatus.minutes + temperatureParserTime > 60) {
+      await WorkStatusProvider.update(uuid, {
+        hours: workStatus.hours + 1,
+        minutes: workStatus.minutes + temperatureParserTime - 60,
+      });
     }
   }));
 }

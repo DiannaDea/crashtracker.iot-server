@@ -7,10 +7,16 @@ const logger = require('./utils/logger');
 const { parseTemperature } = require('./services/temperatureParser');
 const { motitorCriticalTime } = require('./services/criticalSituationNotifier.js');
 const { updateTemps } = require('./services/updateCurrentTemps');
+const { monitorService } = require('./services/serviceNotifier');
 
 require('./services/mongoConnection');
 
-const { temperatureParserTime, criticalNotifierTime, updateCurTemps } = config.schedule;
+const {
+  temperatureParserTime,
+  criticalNotifierTime,
+  updateCurTemps,
+  serviceNotifierTime,
+} = config.schedule;
 
 schedule.scheduleJob(`*/${temperatureParserTime} * * * *`, () => {
   logger.info(`Parse temperature ${new Date()}`);
@@ -18,13 +24,18 @@ schedule.scheduleJob(`*/${temperatureParserTime} * * * *`, () => {
 });
 
 schedule.scheduleJob(`*/${criticalNotifierTime} * * * *`, () => {
-  logger.info(`Send critical notifcation ${new Date()}`);
+  logger.info(`Send critical notification ${new Date()}`);
   motitorCriticalTime();
 });
 
 schedule.scheduleJob(`*/${updateCurTemps} * * * *`, () => {
   logger.info(`Send updated temperatures ${new Date()}`);
   updateTemps();
+});
+
+schedule.scheduleJob(`*/${serviceNotifierTime} * * * *`, () => {
+  logger.info(`Send service notification ${new Date()}`);
+  monitorService();
 });
 
 module.exports = app;
