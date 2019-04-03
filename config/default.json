@@ -6,6 +6,7 @@
   },
   "schedule": {
     "temperatureParserTime": 5,
-    "criticalNotifierTime": 7
+    "criticalNotifierTime": 6,
+    "updateCurTemps": 7
   }
 }
