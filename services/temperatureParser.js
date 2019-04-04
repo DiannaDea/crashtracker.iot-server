@@ -8,25 +8,15 @@ const WorkStatusProvider = require('../providers/WorkStatusProvider');
 const { host, port, protocol } = config['base-api'];
 const { temperatureParserTime } = config.schedule;
 
+const minutesInHour = 60;
+
 async function getSectors() {
   const options = {
     uri: `${protocol}://${host}:${port}/api/sectors`,
     json: true,
   };
 
-  const sectors = await request(options);
-
-  return sectors.map(({
-    uuid,
-    maxTemperature,
-    minTemperature,
-    maxTimeExcess,
-  }) => ({
-    uuid,
-    maxTimeExcess,
-    maxTemperature,
-    minTemperature,
-  }));
+  return request(options);
 }
 
 function generateRandom(min, max) {
@@ -84,16 +74,16 @@ async function parseTemperature() {
       await WorkStatusProvider.create({
         uuid,
         notificationHours,
-        minutes: workStatus.minutes + temperatureParserTime,
+        minutes: temperatureParserTime,
       });
-    } else if (workStatus.minutes + temperatureParserTime < 60) {
-      await WorkStatusProvider.update(uuid, {
-        minutes: workStatus.minutes + temperatureParserTime,
+    } else if (workStatus.minutes + temperatureParserTime < minutesInHour) {
+      await WorkStatusProvider.increaseValues(uuid, {
+        minutes: temperatureParserTime,
       });
-    } else if (workStatus.minutes + temperatureParserTime > 60) {
-      await WorkStatusProvider.update(uuid, {
-        hours: workStatus.hours + 1,
-        minutes: workStatus.minutes + temperatureParserTime - 60,
+    } else if (workStatus.minutes + temperatureParserTime >= minutesInHour) {
+      await WorkStatusProvider.increaseValues(uuid, {
+        hours: 1,
+        minutes: temperatureParserTime - minutesInHour,
       });
     }
   }));
