@@ -11,7 +11,7 @@ const WorkStatusProvider = {
   increaseValues: (uuid, fields) => WorkStatus.updateOne({ uuid }, {
     $inc: fields,
   }),
-  findForService: () => WorkStatus.find({}).$where('this.hours > this.notificationHours'),
+  findForService: () => WorkStatus.find({}).$where('this.hours >= this.notificationHours'),
 };
 
 module.exports = WorkStatusProvider;
