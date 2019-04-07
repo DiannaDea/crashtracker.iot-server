@@ -6,15 +6,11 @@ const logger = require('../utils/logger');
 
 const { host, port, protocol } = config['base-api'];
 
-async function sendServiceToServer({ uuid, hours, minutes }) {
+async function sendServiceToServer({ uuid }) {
   const options = {
     uri: `${protocol}://${host}:${port}/api/sectors/${uuid}/service`,
-    method: 'POST',
+    method: 'PUT',
     json: true,
-    body: {
-      hours,
-      minutes,
-    },
   };
   try {
     await request(options);

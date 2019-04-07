@@ -5,12 +5,16 @@ const LastTempProvider = require('../providers/LastTempProvider');
 const logger = require('../utils/logger');
 
 const { host, port, protocol } = config['base-api'];
+const {
+  temperatureParserTime,
+} = config.schedule;
 
 async function updateTemps() {
   const lastTemps = await LastTempProvider.getAll();
   const sectorTemperatures = lastTemps.map(({ uuid, currentTemperature }) => ({
     uuid,
     currentTemp: currentTemperature,
+    minutesWork: temperatureParserTime,
   }));
 
   const options = {
