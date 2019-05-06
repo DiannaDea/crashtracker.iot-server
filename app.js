@@ -38,4 +38,8 @@ schedule.scheduleJob(`*/${serviceNotifierTime} * * * *`, () => {
   monitorService();
 });
 
+app.use(async (ctx) => {
+  ctx.body = 'Temperature parser';
+});
+
 module.exports = app;

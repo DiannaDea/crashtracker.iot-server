@@ -1,7 +1,7 @@
 {
   "app": {
-      "host": "APP_HOST",
-      "port": "APP_PORT"
+      "host": "HOST",
+      "port": "PORT"
   },
   "base-api": {
     "protocol": "BASE_API_PROTOCOL",
