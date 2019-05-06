@@ -5,14 +5,14 @@ const LastTempProvider = require('../providers/LastTempProvider');
 const CriticalProvider = require('../providers/CriticalProvider');
 const WorkStatusProvider = require('../providers/WorkStatusProvider');
 
-const { host, port, protocol } = config['base-api'];
+const { url } = config['base-api'];
 const { temperatureParserTime } = config.schedule;
 
 const minutesInHour = 60;
 
 async function getSectors() {
   const options = {
-    uri: `${protocol}://${host}:${port}/api/sectors`,
+    uri: `${url}/api/sectors`,
     json: true,
   };
 

@@ -4,7 +4,7 @@ const config = require('config');
 const LastTempProvider = require('../providers/LastTempProvider');
 const logger = require('../utils/logger');
 
-const { host, port, protocol } = config['base-api'];
+const { url } = config['base-api'];
 const {
   temperatureParserTime,
 } = config.schedule;
@@ -18,7 +18,7 @@ async function updateTemps() {
   }));
 
   const options = {
-    uri: `${protocol}://${host}:${port}/api/sectors/temperatures`,
+    uri: `${url}/api/sectors/temperatures`,
     method: 'PUT',
     json: true,
     body: {

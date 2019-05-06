@@ -4,11 +4,11 @@ const config = require('config');
 const WorkStatusProvider = require('../providers/WorkStatusProvider');
 const logger = require('../utils/logger');
 
-const { host, port, protocol } = config['base-api'];
+const { url } = config['base-api'];
 
 async function sendServiceToServer({ uuid }) {
   const options = {
-    uri: `${protocol}://${host}:${port}/api/sectors/${uuid}/service`,
+    uri: `${url}/api/sectors/${uuid}/service`,
     method: 'PUT',
     json: true,
   };

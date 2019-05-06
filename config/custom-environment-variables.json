@@ -4,9 +4,7 @@
       "port": "PORT"
   },
   "base-api": {
-    "protocol": "BASE_API_PROTOCOL",
-    "host": "BASE_API_HOST",
-    "port": "BASE_API_PORT"
+    "url": "BASE_API_URL"
   },
   "mongo-db": {
       "user": "MONGO_DB_USER",

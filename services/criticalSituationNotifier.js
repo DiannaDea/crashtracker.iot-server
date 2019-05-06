@@ -4,11 +4,11 @@ const config = require('config');
 const CriticalProvider = require('../providers/CriticalProvider');
 const logger = require('../utils/logger');
 
-const { host, port, protocol } = config['base-api'];
+const { url } = config['base-api'];
 
 async function sendCritcalToServer(sectorId, timeExcess) {
   const options = {
-    uri: `${protocol}://${host}:${port}/api/sectors/${sectorId}/critical`,
+    uri: `${url}/api/sectors/${sectorId}/critical`,
     method: 'POST',
     json: true,
     body: {
